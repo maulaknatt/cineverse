@@ -1,10 +1,17 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("Missing GEMINI_API_KEY environment variable");
-}
+let geminiClient: GoogleGenerativeAI | null = null;
 
-export const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+function getGeminiClient(): GoogleGenerativeAI {
+  if (!geminiClient) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("Missing GEMINI_API_KEY environment variable");
+    }
+    geminiClient = new GoogleGenerativeAI(apiKey);
+  }
+  return geminiClient;
+}
 
 export const safetySettings = [
   {
@@ -56,7 +63,7 @@ Important rules:
  * Get Gemini Flash model for fast responses
  */
 export function getGeminiFlash() {
-  return gemini.getGenerativeModel({
+  return getGeminiClient().getGenerativeModel({
     model: "gemini-1.5-flash",
     safetySettings,
     systemInstruction: CINEVERSE_SYSTEM_PROMPT,
@@ -67,7 +74,7 @@ export function getGeminiFlash() {
  * Get Gemini Pro model for complex tasks
  */
 export function getGeminiPro() {
-  return gemini.getGenerativeModel({
+  return getGeminiClient().getGenerativeModel({
     model: "gemini-1.5-pro",
     safetySettings,
     systemInstruction: CINEVERSE_SYSTEM_PROMPT,
