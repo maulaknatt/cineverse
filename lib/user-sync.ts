@@ -24,6 +24,22 @@ export async function getOrCreateUser() {
         avatarUrl: clerkUser.imageUrl,
       },
     });
+  } else {
+    // Check if Clerk details have changed and update DB if necessary
+    const hasAvatarChanged = user.avatarUrl !== clerkUser.imageUrl;
+    const hasNameChanged = user.name !== `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim();
+    const hasUsernameChanged = clerkUser.username && user.username !== clerkUser.username;
+    
+    if (hasAvatarChanged || hasNameChanged || hasUsernameChanged) {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          avatarUrl: clerkUser.imageUrl,
+          name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || user.name,
+          username: clerkUser.username || user.username,
+        },
+      });
+    }
   }
 
   return user;
