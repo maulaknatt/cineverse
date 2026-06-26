@@ -67,6 +67,32 @@ function formatMessageContent(content: string) {
     const isBullet = line.trim().startsWith("* ") || line.trim().startsWith("- ");
     const isNumbered = /^\s*\d+\.\s/.test(line);
 
+    if (line.trim() === "---") {
+      if (currentList) {
+        const listEl = flushList(i);
+        if (listEl) elements.push(listEl);
+      }
+      elements.push(<hr key={`hr-${i}`} className="border-white/10 my-4" />);
+      continue;
+    }
+
+    const headerMatch = line.match(/^\s*(#{1,6})\s+(.*)$/);
+    if (headerMatch) {
+      if (currentList) {
+        const listEl = flushList(i);
+        if (listEl) elements.push(listEl);
+      }
+      const headerText = headerMatch[2];
+      const level = headerMatch[1].length;
+      const sizeClass = level === 1 ? "text-xl font-bold text-white mt-5 mb-2" : level === 2 ? "text-lg font-bold text-white mt-4 mb-2" : "text-base font-bold text-white mt-3 mb-1.5";
+      elements.push(
+        <h3 key={`h-${i}`} className={sizeClass}>
+          {parseInlineBold(headerText)}
+        </h3>
+      );
+      continue;
+    }
+
     if (isBullet) {
       if (currentList && currentList.type !== "bullet") {
         const listEl = flushList(i);
