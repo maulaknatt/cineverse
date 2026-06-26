@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Clock, Calendar, Globe, BookMarked, Heart, ArrowLeft } from "lucide-react";
+import { Clock, Calendar, Globe, ArrowLeft } from "lucide-react";
 import { getMovieDetail } from "@/services/tmdb/movies";
 import { getBackdropURL, getPosterURL, getProfileURL } from "@/utils/tmdb-image";
 import { formatYear, formatCurrency } from "@/utils/format";

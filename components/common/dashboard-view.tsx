@@ -159,7 +159,7 @@ export function DashboardView({ user, watchlist, favorites }: DashboardViewProps
               <span className="text-5xl block mb-4">🎬</span>
               <h3 className="font-semibold text-white mb-1">Your Watchlist is empty</h3>
               <p className="text-zinc-500 text-sm max-w-xs mx-auto">
-                Explore movies and click "Add to Watchlist" to save them here!
+                Explore movies and click &quot;Add to Watchlist&quot; to save them here!
               </p>
             </div>
           )
