@@ -11,9 +11,13 @@ export async function POST(req: NextRequest) {
 
     const model = getGeminiFlash();
 
+    // Filter history so it starts with a user message (Gemini API requirement)
+    const firstUserMsgIndex = history.findIndex((msg: { role: string }) => msg.role === "user");
+    const validHistory = firstUserMsgIndex !== -1 ? history.slice(firstUserMsgIndex) : [];
+
     // Start chat with history
     const chat = model.startChat({
-      history: history.map((msg: { role: string; content: string }) => ({
+      history: validHistory.map((msg: { role: string; content: string }) => ({
         role: msg.role === "user" ? "user" : "model",
         parts: [{ text: msg.content }],
       })),
