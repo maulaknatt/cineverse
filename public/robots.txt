@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /settings
+Disallow: /dashboard
+
+Sitemap: https://cineverse.vercel.app/sitemap.xml
