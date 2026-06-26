@@ -19,6 +19,109 @@ interface Message {
   timestamp: Date;
 }
 
+function formatMessageContent(content: string) {
+  const lines = content.split("\n");
+  const elements: React.ReactNode[] = [];
+  
+  let currentList: { type: "bullet" | "number"; items: React.ReactNode[] } | null = null;
+  
+  const parseInlineBold = (text: string) => {
+    const parts = [];
+    let currentIdx = 0;
+    const regex = /\*\*(.*?)\*\*/g;
+    let match;
+    
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > currentIdx) {
+        parts.push(text.substring(currentIdx, match.index));
+      }
+      parts.push(<strong key={match.index} className="font-bold text-white">{match[1]}</strong>);
+      currentIdx = regex.lastIndex;
+    }
+    
+    if (currentIdx < text.length) {
+      parts.push(text.substring(currentIdx));
+    }
+    
+    return parts.length > 0 ? parts : text;
+  };
+
+  const flushList = (key: number) => {
+    if (!currentList) return null;
+    const listKey = `list-${key}`;
+    const el = currentList.type === "bullet" ? (
+      <ul key={listKey} className="list-disc pl-5 space-y-1.5 my-3 text-zinc-300">
+        {currentList.items}
+      </ul>
+    ) : (
+      <ol key={listKey} className="list-decimal pl-5 space-y-2 my-3 text-zinc-200">
+        {currentList.items}
+      </ol>
+    );
+    currentList = null;
+    return el;
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const isBullet = line.trim().startsWith("* ") || line.trim().startsWith("- ");
+    const isNumbered = /^\s*\d+\.\s/.test(line);
+
+    if (isBullet) {
+      if (currentList && currentList.type !== "bullet") {
+        const listEl = flushList(i);
+        if (listEl) elements.push(listEl);
+      }
+      if (!currentList) {
+        currentList = { type: "bullet", items: [] };
+      }
+      const cleanText = line.trim().substring(2);
+      currentList.items.push(
+        <li key={`li-${i}`}>
+          {parseInlineBold(cleanText)}
+        </li>
+      );
+    } else if (isNumbered) {
+      if (currentList && currentList.type !== "number") {
+        const listEl = flushList(i);
+        if (listEl) elements.push(listEl);
+      }
+      if (!currentList) {
+        currentList = { type: "number", items: [] };
+      }
+      const match = line.match(/^\s*(\d+\.\s)/);
+      const cleanText = line.substring(match ? match[0].length : 0);
+      currentList.items.push(
+        <li key={`li-${i}`}>
+          {parseInlineBold(cleanText)}
+        </li>
+      );
+    } else {
+      if (currentList) {
+        const listEl = flushList(i);
+        if (listEl) elements.push(listEl);
+      }
+      
+      if (line.trim() === "") {
+        elements.push(<div key={`space-${i}`} className="h-2" />);
+      } else {
+        elements.push(
+          <p key={`p-${i}`} className="mb-2 text-zinc-300">
+            {parseInlineBold(line)}
+          </p>
+        );
+      }
+    }
+  }
+
+  if (currentList) {
+    const listEl = flushList(lines.length);
+    if (listEl) elements.push(listEl);
+  }
+
+  return elements;
+}
+
 export default function AIPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -227,7 +330,7 @@ export default function AIPage() {
                             : "glass border border-white/10 text-zinc-200 rounded-tl-sm"
                         )}
                       >
-                        {msg.content}
+                        {formatMessageContent(msg.content)}
                       </div>
                     </motion.div>
                   ))}
