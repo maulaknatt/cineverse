@@ -64,7 +64,7 @@ Important rules:
  */
 export function getGeminiFlash() {
   return getGeminiClient().getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     safetySettings,
     systemInstruction: CINEVERSE_SYSTEM_PROMPT,
   });
@@ -75,7 +75,7 @@ export function getGeminiFlash() {
  */
 export function getGeminiPro() {
   return getGeminiClient().getGenerativeModel({
-    model: "gemini-1.5-pro",
+    model: "gemini-2.5-flash",
     safetySettings,
     systemInstruction: CINEVERSE_SYSTEM_PROMPT,
   });
