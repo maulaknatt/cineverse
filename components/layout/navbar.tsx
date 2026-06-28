@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Film, Search, Sparkles, Menu, X } from "lucide-react";
-import { UserButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
 
@@ -18,7 +18,6 @@ const NAV_LINKS = [
 export function Navbar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isSignedIn } = useUser();
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
@@ -54,7 +53,7 @@ export function Navbar() {
                   </Link>
                 );
               })}
-              {isSignedIn && (
+              <SignedIn>
                 <Link
                   href="/dashboard"
                   className={cn(
@@ -66,7 +65,7 @@ export function Navbar() {
                 >
                   Dashboard
                 </Link>
-              )}
+              </SignedIn>
             </div>
           </div>
 
@@ -153,7 +152,7 @@ export function Navbar() {
                 );
               })}
 
-              {isSignedIn && (
+              <SignedIn>
                 <Link
                   href="/dashboard"
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -166,7 +165,7 @@ export function Navbar() {
                 >
                   Dashboard
                 </Link>
-              )}
+              </SignedIn>
 
               {/* Mobile AI Picks */}
               <Link
