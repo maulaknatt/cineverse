@@ -17,8 +17,9 @@ interface TVDetailPageProps {
 
 export async function generateMetadata({ params }: TVDetailPageProps): Promise<Metadata> {
   const { id } = await params;
+  const numericId = String(id).split("-")[0];
   try {
-    const show = await getTVDetail(id);
+    const show = await getTVDetail(numericId);
     return {
       title: show.name,
       description: show.overview,
@@ -41,10 +42,11 @@ import { MediaActions } from "@/components/common/media-actions";
 
 export default async function TVDetailPage({ params }: TVDetailPageProps) {
   const { id } = await params;
+  const numericId = String(id).split("-")[0];
   let show;
 
   try {
-    show = await getTVDetail(id);
+    show = await getTVDetail(numericId);
   } catch {
     notFound();
   }

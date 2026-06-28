@@ -18,3 +18,12 @@ export async function searchMoviesOnly(query: string, page: number = 1) {
     include_adult: false,
   });
 }
+
+export async function searchTVOnly(query: string, page: number = 1) {
+  return fetchTMDB<TMDBResponse<any>>("/search/tv", {
+    query,
+    page,
+    language: "en-US",
+    include_adult: false,
+  });
+}

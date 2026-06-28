@@ -17,8 +17,9 @@ interface MovieDetailPageProps {
 
 export async function generateMetadata({ params }: MovieDetailPageProps): Promise<Metadata> {
   const { id } = await params;
+  const numericId = String(id).split("-")[0];
   try {
-    const movie = await getMovieDetail(id);
+    const movie = await getMovieDetail(numericId);
     return {
       title: movie.title,
       description: movie.overview,
@@ -41,10 +42,11 @@ import { MediaActions } from "@/components/common/media-actions";
 
 export default async function MovieDetailPage({ params }: MovieDetailPageProps) {
   const { id } = await params;
+  const numericId = String(id).split("-")[0];
   let movie;
 
   try {
-    movie = await getMovieDetail(id);
+    movie = await getMovieDetail(numericId);
   } catch {
     notFound();
   }

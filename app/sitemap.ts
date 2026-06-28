@@ -1,9 +1,23 @@
 import { MetadataRoute } from "next";
+import { getTrendingMovies } from "@/services/tmdb/movies";
+import { getTrendingTV } from "@/services/tmdb/tv";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+function slugify(text: string) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://cineverse.vercel.app";
 
-  return [
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -65,4 +79,39 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
   ];
+
+  let movieRoutes: MetadataRoute.Sitemap = [];
+  let tvRoutes: MetadataRoute.Sitemap = [];
+
+  try {
+    const trendingMovies = await getTrendingMovies("week");
+    movieRoutes = (trendingMovies.results || []).slice(0, 30).map((movie) => {
+      const slug = slugify(movie.title);
+      return {
+        url: `${baseUrl}/movies/${movie.id}-${slug}`,
+        lastModified: new Date(),
+        changeFrequency: "daily",
+        priority: 0.8,
+      };
+    });
+  } catch (err) {
+    console.error("Failed to fetch trending movies for sitemap:", err);
+  }
+
+  try {
+    const trendingTV = await getTrendingTV("week");
+    tvRoutes = (trendingTV.results || []).slice(0, 30).map((show) => {
+      const slug = slugify(show.name);
+      return {
+        url: `${baseUrl}/tv/${show.id}-${slug}`,
+        lastModified: new Date(),
+        changeFrequency: "daily",
+        priority: 0.8,
+      };
+    });
+  } catch (err) {
+    console.error("Failed to fetch trending TV for sitemap:", err);
+  }
+
+  return [...staticRoutes, ...movieRoutes, ...tvRoutes];
 }
