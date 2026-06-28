@@ -8,6 +8,7 @@ import { formatYear } from "@/utils/format";
 import { GenreBadge, RatingBadge, SectionHeader } from "@/components/common/section-header";
 import { MovieCarousel } from "@/components/common/movie-carousel";
 import { ReviewSection } from "@/components/community/review-section";
+import { AIRecommendations } from "@/components/community/ai-recommendations";
 import type { Metadata } from "next";
 
 interface TVDetailPageProps {
@@ -271,6 +272,13 @@ export default async function TVDetailPage({ params }: TVDetailPageProps) {
             )}
           </div>
         </div>
+
+        {/* AI Recommendations */}
+        <AIRecommendations
+          title={show.name}
+          overview={show.overview}
+          genres={show.genres.map((g) => g.name).join(", ")}
+        />
 
         {/* Recommendations */}
         {recommendations.length > 0 && (

@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { BookMarked, Heart, Calendar, Trophy, Star } from "lucide-react";
+import { BookMarked, Heart, Calendar, Trophy, Star, BarChart2 } from "lucide-react";
 import { MovieCard } from "@/components/common/movie-card";
 import { cn } from "@/utils/cn";
+import { getPosterURL } from "@/utils/tmdb-image";
+import { motion } from "framer-motion";
 
 interface DashboardViewProps {
   user: {
@@ -18,10 +20,16 @@ interface DashboardViewProps {
   watchlist: any[];
   favorites: any[];
   reviewCount: number;
+  analyticsData: {
+    topGenres: Array<{ name: string; count: number }>;
+    topActors: Array<{ name: string; count: number; avatarUrl: string | null }>;
+    watchTimeStats: Array<{ label: string; count: number; percentage: number }>;
+    totalWatchTimeHours: number;
+  };
 }
 
-export function DashboardView({ user, watchlist, favorites, reviewCount }: DashboardViewProps) {
-  const [activeTab, setActiveTab] = useState<"watchlist" | "favorites">("watchlist");
+export function DashboardView({ user, watchlist, favorites, reviewCount, analyticsData }: DashboardViewProps) {
+  const [activeTab, setActiveTab] = useState<"watchlist" | "favorites" | "analytics">("watchlist");
 
   const joinedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
     month: "long",
@@ -141,12 +149,25 @@ export function DashboardView({ user, watchlist, favorites, reviewCount }: Dashb
             <Heart className="w-4 h-4" />
             Favorites ({favorites.length})
           </button>
+          <button
+            onClick={() => setActiveTab("analytics")}
+            className={cn(
+              "flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-all cursor-pointer",
+              activeTab === "analytics"
+                ? "border-[#E50914] text-white"
+                : "border-transparent text-zinc-400 hover:text-white"
+            )}
+          >
+            <BarChart2 className="w-4 h-4" />
+            Analytics 📈
+          </button>
         </div>
       </div>
 
       {/* Grid Content */}
       <div>
-        {activeTab === "watchlist" ? (
+        {/* Watchlist Tab */}
+        {activeTab === "watchlist" && (
           watchlist.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {watchlist.map((item) => (
@@ -166,23 +187,175 @@ export function DashboardView({ user, watchlist, favorites, reviewCount }: Dashb
               </p>
             </div>
           )
-        ) : favorites.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {favorites.map((item) => (
-              <MovieCard
-                key={item.id}
-                media={item.details}
-                mediaType={item.mediaType}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20 glass border-white/10 rounded-2xl">
-            <span className="text-5xl block mb-4">❤️</span>
-            <h3 className="font-semibold text-white mb-1">No Favorites yet</h3>
-            <p className="text-zinc-500 text-sm max-w-xs mx-auto">
-              Heart your favorite films and series to build your curation catalog here!
-            </p>
+        )}
+
+        {/* Favorites list */}
+        {activeTab === "favorites" && (
+          favorites.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {favorites.map((item) => (
+                <MovieCard
+                  key={item.id}
+                  media={item.details}
+                  mediaType={item.mediaType}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 glass border-white/10 rounded-2xl">
+              <span className="text-5xl block mb-4">❤️</span>
+              <h3 className="font-semibold text-white mb-1">No Favorites yet</h3>
+              <p className="text-zinc-500 text-sm max-w-xs mx-auto">
+                Heart your favorite films and series to build your curation catalog here!
+              </p>
+            </div>
+          )
+        )}
+
+        {/* Analytics Tab (Tahap 5) */}
+        {activeTab === "analytics" && (
+          <div className="space-y-8 animate-fade-in">
+            {/* Watch Time Summary Card */}
+            <div className="glass border-white/10 rounded-3xl p-6 flex items-center justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/[0.03] rounded-full blur-[50px] pointer-events-none" />
+              <div className="space-y-1 relative z-10">
+                <h3 className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">Total Watch Time</h3>
+                <p className="text-3xl font-extrabold text-white tracking-tight">
+                  {analyticsData.totalWatchTimeHours} <span className="text-sm font-semibold text-zinc-400">Hours</span>
+                </p>
+                <p className="text-zinc-500 text-xs">Accumulated runtime of all your completed movies and series.</p>
+              </div>
+              <span className="text-4xl select-none">⏱️</span>
+            </div>
+
+            {/* Sub charts grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Genre Chart */}
+              <div className="glass border-white/10 rounded-3xl p-6 space-y-6">
+                <div>
+                  <h4 className="font-bold text-white text-base">Favorite Genres</h4>
+                  <p className="text-zinc-500 text-xs mt-0.5">Most watched genres in your catalog.</p>
+                </div>
+                
+                <div className="space-y-4">
+                  {analyticsData.topGenres.length > 0 ? (
+                    analyticsData.topGenres.map((genre, idx) => {
+                      const maxVal = analyticsData.topGenres[0]?.count || 1;
+                      const pct = Math.round((genre.count / maxVal) * 100);
+                      const barColors = [
+                        "bg-[#E50914]",
+                        "bg-rose-500",
+                        "bg-amber-500",
+                        "bg-sky-500",
+                        "bg-indigo-500",
+                      ];
+                      const color = barColors[idx % barColors.length];
+
+                      return (
+                        <div key={genre.name} className="space-y-1.5">
+                          <div className="flex justify-between text-xs font-medium">
+                            <span className="text-zinc-300">{genre.name}</span>
+                            <span className="text-white">{genre.count} titles</span>
+                          </div>
+                          <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/5">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct}%` }}
+                              transition={{ duration: 0.8, delay: idx * 0.1 }}
+                              className={cn("h-full rounded-full", color)}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-zinc-500 text-xs py-8 text-center">Mark titles as completed to calculate genres</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Watch Time Preference */}
+              <div className="glass border-white/10 rounded-3xl p-6 space-y-6">
+                <div>
+                  <h4 className="font-bold text-white text-base">Watch Time Preferences</h4>
+                  <p className="text-zinc-500 text-xs mt-0.5">When you usually enjoy watching movies.</p>
+                </div>
+
+                <div className="space-y-4">
+                  {analyticsData.watchTimeStats.some(s => s.count > 0) ? (
+                    analyticsData.watchTimeStats.map((stat, idx) => {
+                      const timeColors = [
+                        "bg-amber-400 shadow-amber-400/10",
+                        "bg-sky-400 shadow-sky-400/10",
+                        "bg-indigo-500 shadow-indigo-500/10",
+                        "bg-purple-600 shadow-purple-600/10",
+                      ];
+                      const color = timeColors[idx % timeColors.length];
+
+                      return (
+                        <div key={stat.label} className="space-y-1.5">
+                          <div className="flex justify-between text-xs font-medium">
+                            <span className="text-zinc-300">{stat.label}</span>
+                            <span className="text-white">{stat.percentage}%</span>
+                          </div>
+                          <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/5">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${stat.percentage}%` }}
+                              transition={{ duration: 0.8, delay: idx * 0.1 }}
+                              className={cn("h-full rounded-full shadow-lg", color)}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-zinc-500 text-xs py-8 text-center">Add titles to history to track watch times</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Favorite Cast */}
+            <div className="glass border-white/10 rounded-3xl p-6 space-y-6">
+              <div>
+                <h4 className="font-bold text-white text-base">Star Cast Appearances</h4>
+                <p className="text-zinc-500 text-xs mt-0.5">Your most watched actors based on completed movie cast listings.</p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                {analyticsData.topActors.length > 0 ? (
+                  analyticsData.topActors.map((actor, idx) => (
+                    <motion.div
+                      key={actor.name}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.05 }}
+                      className="flex flex-col items-center text-center p-3 glass border-white/5 hover:border-white/10 rounded-2xl transition-all"
+                    >
+                      <div className="relative w-14 h-14 rounded-full overflow-hidden bg-zinc-800 border-2 border-white/10 mb-3 shrink-0 shadow-md shadow-black/35">
+                        {actor.avatarUrl ? (
+                          <Image
+                            src={getPosterURL(actor.avatarUrl, "w185")}
+                            alt={actor.name}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-zinc-500 font-bold text-xs bg-zinc-800">
+                            {actor.name[0]}
+                          </div>
+                        )}
+                      </div>
+                      <h5 className="font-bold text-white text-xs line-clamp-1">{actor.name}</h5>
+                      <p className="text-[10px] text-zinc-500 font-medium mt-0.5">{actor.count} titles watched</p>
+                    </motion.div>
+                  ))
+                ) : (
+                  <p className="text-zinc-500 text-xs py-8 text-center col-span-full">Mark titles as completed to compile cast stars</p>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>

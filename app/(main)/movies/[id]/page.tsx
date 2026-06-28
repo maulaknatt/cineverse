@@ -8,6 +8,7 @@ import { formatYear, formatCurrency } from "@/utils/format";
 import { GenreBadge, RatingBadge, SectionHeader } from "@/components/common/section-header";
 import { MovieCarousel } from "@/components/common/movie-carousel";
 import { ReviewSection } from "@/components/community/review-section";
+import { AIRecommendations } from "@/components/community/ai-recommendations";
 import type { Metadata } from "next";
 
 interface MovieDetailPageProps {
@@ -263,6 +264,13 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
             )}
           </div>
         </div>
+
+        {/* AI Recommendations */}
+        <AIRecommendations
+          title={movie.title}
+          overview={movie.overview}
+          genres={movie.genres.map((g) => g.name).join(", ")}
+        />
 
         {/* Recommendations */}
         {recommendations.length > 0 && (
