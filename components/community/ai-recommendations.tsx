@@ -98,7 +98,7 @@ export function AIRecommendations({ title, overview, genres }: AIRecommendations
               </div>
               <h3 className="font-extrabold text-white text-base">Get Unlimited AI Recommendations</h3>
               <p className="text-zinc-300 text-xs leading-relaxed max-w-xl">
-                You've used all 5 free AI recommendations for today. Upgrade to <span className="text-amber-500 font-bold">CineVerse PRO</span> to get unlimited AI similarity picks, direct chat with CineBot, and ad-free experience.
+                You&apos;ve used all 5 free AI recommendations for today. Upgrade to <span className="text-amber-500 font-bold">CineVerse PRO</span> to get unlimited AI similarity picks, direct chat with CineBot, and ad-free experience.
               </p>
             </div>
             <Link
