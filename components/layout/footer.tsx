@@ -4,8 +4,8 @@ import { Film, Github, Twitter, Instagram, Heart } from "lucide-react";
 const FOOTER_LINKS = {
   Discover: [
     { label: "Trending", href: "/trending" },
-    { label: "Popular Movies", href: "/popular" },
-    { label: "Top Rated", href: "/top-rated" },
+    { label: "Popular Movies", href: "/movies?sort=popularity.desc" },
+    { label: "Top Rated", href: "/movies?sort=vote_average.desc" },
     { label: "Series", href: "/tv" },
     { label: "Genres", href: "/genres" },
   ],
