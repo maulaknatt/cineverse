@@ -24,11 +24,13 @@ export function AIRecommendations({ title, overview, genres }: AIRecommendations
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLimitReached, setIsLimitReached] = useState(false);
 
   useEffect(() => {
     async function fetchAIRecommendations() {
       setIsLoading(true);
       setError(null);
+      setIsLimitReached(false);
       try {
         const res = await fetch("/api/ai/similar", {
           method: "POST",
@@ -39,6 +41,13 @@ export function AIRecommendations({ title, overview, genres }: AIRecommendations
         if (res.ok) {
           const data = await res.json();
           setRecommendations(data.recommendations || []);
+        } else if (res.status === 403) {
+          const data = await res.json();
+          if (data.error === "FREE_LIMIT_REACHED") {
+            setIsLimitReached(true);
+          } else {
+            throw new Error("Failed to fetch similar recommendations");
+          }
         } else {
           throw new Error("Failed to fetch similar recommendations");
         }
@@ -56,6 +65,54 @@ export function AIRecommendations({ title, overview, genres }: AIRecommendations
   }, [title, overview, genres]);
 
   if (error) return null; // Silently hide if it fails, fallback to default TMDB
+
+  if (isLimitReached) {
+    return (
+      <div className="mt-16 space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-2 border-b border-white/10 pb-4">
+          <div className="w-8 h-8 rounded-lg bg-[#E50914]/15 border border-[#E50914]/30 flex items-center justify-center text-[#E50914]">
+            <Sparkles className="w-4.5 h-4.5 text-[#E50914]" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+              AI-Powered Similar Picks
+              <span className="text-[10px] uppercase tracking-widest bg-[#E50914] text-white px-2 py-0.5 rounded-full font-bold">
+                Gemini
+              </span>
+            </h2>
+            <p className="text-zinc-400 text-xs mt-0.5">
+              Smart recommendations analyzed by Google Gemini based on themes, plot, and style.
+            </p>
+          </div>
+        </div>
+
+        {/* Upgrade Card */}
+        <div className="relative overflow-hidden rounded-2xl glass border border-[#E50914]/30 bg-gradient-to-r from-[#E50914]/10 via-zinc-950/40 to-[#E50914]/10 p-6 shadow-xl">
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#E50914]/30 to-transparent" />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E50914]/10 border border-[#E50914]/20 text-xs font-bold text-[#E50914] mb-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                Daily limit reached (5/5)
+              </div>
+              <h3 className="font-extrabold text-white text-base">Get Unlimited AI Recommendations</h3>
+              <p className="text-zinc-300 text-xs leading-relaxed max-w-xl">
+                You've used all 5 free AI recommendations for today. Upgrade to <span className="text-amber-500 font-bold">CineVerse PRO</span> to get unlimited AI similarity picks, direct chat with CineBot, and ad-free experience.
+              </p>
+            </div>
+            <Link
+              href="/upgrade"
+              className="flex items-center gap-1.5 bg-[#E50914] hover:bg-[#b8070f] text-white px-5 py-3 rounded-xl font-bold text-xs shadow-lg shadow-[#E50914]/15 hover:shadow-[#E50914]/30 hover:scale-102 transition-all shrink-0 cursor-pointer w-full md:w-auto justify-center"
+            >
+              <span>Unlock PRO Access</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-16 space-y-6">

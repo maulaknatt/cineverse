@@ -23,6 +23,30 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "5mb",
     },
   },
+  async redirects() {
+    return [
+      {
+        source: "/popular",
+        destination: "/movies?sort=popularity.desc",
+        permanent: true,
+      },
+      {
+        source: "/top-rated",
+        destination: "/movies?sort=vote_average.desc",
+        permanent: true,
+      },
+      {
+        source: "/watchlist",
+        destination: "/dashboard",
+        permanent: true,
+      },
+      {
+        source: "/collections",
+        destination: "/dashboard",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

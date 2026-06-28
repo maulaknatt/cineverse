@@ -49,7 +49,7 @@ export function AdBanner() {
         <X className="w-4 h-4" />
       </button>
 
-      <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-6 pr-12">
+      <div className="pt-10 pb-6 px-6 md:p-6 flex flex-col md:flex-row items-center justify-between gap-6 md:pr-12">
         {/* Ad message */}
         <div className="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
           <div className="w-12 h-12 rounded-2xl bg-[#E50914]/10 border border-[#E50914]/20 flex items-center justify-center text-[#E50914] shrink-0 shadow-md shadow-[#E50914]/5">

@@ -2,12 +2,14 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import {
   Sparkles,
   Send,
   RefreshCw,
   Film,
   Loader2,
+  ArrowRight,
 } from "lucide-react";
 import { AI_PROMPT_EXAMPLES, MOOD_OPTIONS } from "@/constants/ai-prompts";
 import { cn } from "@/utils/cn";
@@ -17,6 +19,7 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  isLimitReached?: boolean;
 }
 
 function formatMessageContent(content: string) {
@@ -202,6 +205,18 @@ export default function AIPage() {
 
       const data = await res.json();
 
+      if (res.status === 403 && data.error === "FREE_LIMIT_REACHED") {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: data.message || "Daily limit reached.",
+          timestamp: new Date(),
+          isLimitReached: true,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+        return;
+      }
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -350,13 +365,30 @@ export default function AIPage() {
                       )}
                       <div
                         className={cn(
-                          "max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+                          "max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed relative overflow-hidden",
                           msg.role === "user"
                             ? "bg-[#E50914] text-white rounded-tr-sm"
+                            : msg.isLimitReached
+                            ? "border border-[#E50914]/30 bg-gradient-to-r from-[#E50914]/10 via-zinc-950/40 to-[#E50914]/10 text-zinc-200 rounded-tl-sm shadow-lg shadow-[#E50914]/5"
                             : "glass border border-white/10 text-zinc-200 rounded-tl-sm"
                         )}
                       >
+                        {msg.isLimitReached && (
+                          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#E50914]/35 to-transparent" />
+                        )}
                         {formatMessageContent(msg.content)}
+                        {msg.isLimitReached && (
+                          <div className="mt-3 pt-3 border-t border-[#E50914]/15 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <span className="text-[11px] text-zinc-400">Unlock unlimited queries with CineVerse PRO</span>
+                            <Link
+                              href="/upgrade"
+                              className="inline-flex items-center justify-center gap-1 bg-[#E50914] hover:bg-[#b8070f] text-white px-3 py-1.5 rounded-lg font-bold text-[11px] shadow-md transition-all self-start cursor-pointer"
+                            >
+                              <span>Upgrade Now</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </Link>
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   ))}
