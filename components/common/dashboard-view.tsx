@@ -17,9 +17,10 @@ interface DashboardViewProps {
   };
   watchlist: any[];
   favorites: any[];
+  reviewCount: number;
 }
 
-export function DashboardView({ user, watchlist, favorites }: DashboardViewProps) {
+export function DashboardView({ user, watchlist, favorites, reviewCount }: DashboardViewProps) {
   const [activeTab, setActiveTab] = useState<"watchlist" | "favorites">("watchlist");
 
   const joinedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
@@ -30,6 +31,8 @@ export function DashboardView({ user, watchlist, favorites }: DashboardViewProps
   // Level progress math: Assume each level is 100 XP
   const xpNeeded = 100;
   const xpPercentage = Math.min((user.xp / xpNeeded) * 100, 100);
+
+  const completedCount = watchlist.filter((item) => item.status === "COMPLETED").length;
 
   return (
     <div className="space-y-8">
@@ -94,10 +97,10 @@ export function DashboardView({ user, watchlist, favorites }: DashboardViewProps
       {/* Stats Quick Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Watchlist Items", value: watchlist.length, icon: BookMarked },
+          { label: "Completed (Watched)", value: completedCount, icon: BookMarked },
           { label: "Favorites List", value: favorites.length, icon: Heart },
-          { label: "Profile Level", value: `Lv. ${user.level}`, icon: Trophy },
-          { label: "XP Status", value: `${user.xp} XP`, icon: Star },
+          { label: "Total Reviews", value: reviewCount, icon: Star },
+          { label: "XP Status", value: `${user.xp} XP`, icon: Trophy },
         ].map(({ label, value, icon: Icon }) => (
           <div key={label} className="glass border-white/10 p-4 rounded-2xl flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-zinc-400 shrink-0 border border-white/5">

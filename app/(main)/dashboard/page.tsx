@@ -21,8 +21,8 @@ export default async function DashboardPage() {
     redirect("/sign-in?redirect_url=/dashboard");
   }
 
-  // Fetch watchlist and favorites from DB
-  const [dbWatchlist, dbFavorites] = await Promise.all([
+  // Fetch watchlist, favorites, and review count from DB
+  const [dbWatchlist, dbFavorites, reviewCount] = await Promise.all([
     prisma.watchlistItem.findMany({
       where: { userId: user.id },
       orderBy: { addedAt: "desc" },
@@ -30,6 +30,9 @@ export default async function DashboardPage() {
     prisma.favorite.findMany({
       where: { userId: user.id },
       orderBy: { addedAt: "desc" },
+    }),
+    prisma.review.count({
+      where: { userId: user.id },
     }),
   ]);
 
@@ -43,6 +46,7 @@ export default async function DashboardPage() {
         return {
           id: item.id,
           mediaType: item.mediaType,
+          status: item.status,
           details,
         };
       } catch (err) {
@@ -84,6 +88,7 @@ export default async function DashboardPage() {
           }}
           watchlist={watchlist}
           favorites={favorites}
+          reviewCount={reviewCount}
         />
       </div>
     </div>

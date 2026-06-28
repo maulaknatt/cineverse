@@ -7,6 +7,7 @@ import { getBackdropURL, getPosterURL, getProfileURL } from "@/utils/tmdb-image"
 import { formatYear } from "@/utils/format";
 import { GenreBadge, RatingBadge, SectionHeader } from "@/components/common/section-header";
 import { MovieCarousel } from "@/components/common/movie-carousel";
+import { ReviewSection } from "@/components/community/review-section";
 import type { Metadata } from "next";
 
 interface TVDetailPageProps {
@@ -49,7 +50,7 @@ export default async function TVDetailPage({ params }: TVDetailPageProps) {
 
   // Fetch initial watchlist/favorites state if user is logged in
   const { userId: clerkId } = await auth();
-  let initialInWatchlist = false;
+  let initialWatchlistStatus: "PLAN_TO_WATCH" | "WATCHING" | "COMPLETED" | "DROPPED" | null = null;
   let initialInFavorites = false;
 
   if (clerkId) {
@@ -66,7 +67,7 @@ export default async function TVDetailPage({ params }: TVDetailPageProps) {
     });
 
     if (dbUser) {
-      initialInWatchlist = dbUser.watchlistItems.length > 0;
+      initialWatchlistStatus = (dbUser.watchlistItems[0]?.status as "PLAN_TO_WATCH" | "WATCHING" | "COMPLETED" | "DROPPED") || null;
       initialInFavorites = dbUser.favorites.length > 0;
     }
   }
@@ -130,7 +131,7 @@ export default async function TVDetailPage({ params }: TVDetailPageProps) {
             <MediaActions
               tmdbId={show.id}
               mediaType="tv"
-              initialInWatchlist={initialInWatchlist}
+              initialWatchlistStatus={initialWatchlistStatus}
               initialInFavorites={initialInFavorites}
             />
           </div>
@@ -281,6 +282,9 @@ export default async function TVDetailPage({ params }: TVDetailPageProps) {
             />
           </div>
         )}
+
+        {/* Reviews Section */}
+        <ReviewSection tmdbId={show.id} mediaType="tv" />
       </div>
 
       {/* JSON-LD */}
