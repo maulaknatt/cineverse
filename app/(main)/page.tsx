@@ -2,6 +2,7 @@ import { HeroBanner } from "@/features/landing/hero-banner";
 import { AISection } from "@/features/landing/ai-section";
 import { GenresSection } from "@/features/landing/genres-section";
 import { MovieCarousel } from "@/components/common/movie-carousel";
+import { AdBanner } from "@/components/common/ad-banner";
 import {
   getTrendingMovies,
   getPopularMovies,
@@ -116,6 +117,9 @@ export default async function HomePage() {
           mediaType="movie"
           seeAllHref="/movies"
         />
+
+        {/* Dynamic Sponsor Ad Banner */}
+        <AdBanner />
       </div>
 
       <StatsSection />

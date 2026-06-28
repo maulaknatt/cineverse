@@ -9,6 +9,7 @@ import { GenreBadge, RatingBadge, SectionHeader } from "@/components/common/sect
 import { MovieCarousel } from "@/components/common/movie-carousel";
 import { ReviewSection } from "@/components/community/review-section";
 import { AIRecommendations } from "@/components/community/ai-recommendations";
+import { AdBanner } from "@/components/common/ad-banner";
 import type { Metadata } from "next";
 
 interface MovieDetailPageProps {
@@ -266,6 +267,9 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
             )}
           </div>
         </div>
+
+        {/* Dynamic Sponsor Ad Banner */}
+        <AdBanner />
 
         {/* AI Recommendations */}
         <AIRecommendations

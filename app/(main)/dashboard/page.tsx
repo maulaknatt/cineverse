@@ -169,6 +169,7 @@ export default async function DashboardPage() {
             level: user.level,
             xp: user.xp,
             createdAt: user.createdAt,
+            isPro: user.isPro,
           }}
           watchlist={watchlist}
           favorites={favorites}

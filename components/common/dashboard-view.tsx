@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { BookMarked, Heart, Calendar, Trophy, Star, BarChart2 } from "lucide-react";
+import { BookMarked, Heart, Calendar, Trophy, Star, BarChart2, Lock } from "lucide-react";
 import { MovieCard } from "@/components/common/movie-card";
 import { cn } from "@/utils/cn";
 import { getPosterURL } from "@/utils/tmdb-image";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 interface DashboardViewProps {
   user: {
@@ -16,6 +17,7 @@ interface DashboardViewProps {
     level: number;
     xp: number;
     createdAt: Date;
+    isPro: boolean;
   };
   watchlist: any[];
   favorites: any[];
@@ -68,8 +70,13 @@ export function DashboardView({ user, watchlist, favorites, reviewCount, analyti
 
           {/* User info */}
           <div className="flex-1 text-center md:text-left space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center justify-center md:justify-start gap-2">
               {user.name || user.username}
+              {user.isPro && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-500 text-[10px] font-black uppercase tracking-wider shadow-lg shadow-amber-500/5">
+                  PRO
+                </span>
+              )}
             </h1>
             <p className="text-zinc-400 text-sm font-medium">@{user.username}</p>
             
@@ -212,8 +219,8 @@ export function DashboardView({ user, watchlist, favorites, reviewCount, analyti
           )
         )}
 
-        {/* Analytics Tab (Tahap 5) */}
-        {activeTab === "analytics" && (
+        {/* Analytics Tab (Tahap 5 / 7) */}
+        {activeTab === "analytics" && user.isPro && (
           <div className="space-y-8 animate-fade-in">
             {/* Watch Time Summary Card */}
             <div className="glass border-white/10 rounded-3xl p-6 flex items-center justify-between relative overflow-hidden">
@@ -355,6 +362,34 @@ export function DashboardView({ user, watchlist, favorites, reviewCount, analyti
                   <p className="text-zinc-500 text-xs py-8 text-center col-span-full">Mark titles as completed to compile cast stars</p>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Locked Analytics for Free Users (Tahap 7) */}
+        {activeTab === "analytics" && !user.isPro && (
+          <div className="relative glass border-white/10 rounded-3xl p-8 overflow-hidden h-[400px] flex flex-col items-center justify-center text-center space-y-5 animate-fade-in shadow-2xl">
+            {/* Background blur decorative */}
+            <div className="absolute inset-0 bg-black/45 backdrop-blur-[6px] z-10 pointer-events-none" />
+            
+            {/* Lock Icon and Text */}
+            <div className="relative z-20 space-y-3 max-w-sm">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-500 mb-2 shadow-lg shadow-amber-500/10">
+                <Lock className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-black text-white tracking-tight">Unlock Advanced Analytics</h3>
+              <p className="text-zinc-400 text-xs leading-relaxed">
+                Track your cinematic habits! Upgrade to PRO to view detailed statistics of your favorite genres, actor cast appearances, and watch hour preferences.
+              </p>
+            </div>
+
+            <div className="relative z-20 pt-2 w-full max-w-xs">
+              <Link
+                href="/upgrade"
+                className="inline-flex w-full bg-[#E50914] hover:bg-[#b8070f] text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-[#E50914]/25 transition-all justify-center cursor-pointer"
+              >
+                Upgrade to PRO ($4.99/mo)
+              </Link>
             </div>
           </div>
         )}

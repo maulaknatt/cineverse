@@ -1,8 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGeminiFlash } from "@/services/gemini/client";
+import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
+    const { userId: clerkId } = await auth();
+
+    if (clerkId) {
+      const user = await prisma.user.findUnique({
+        where: { clerkId },
+        select: { id: true, isPro: true, aiQueryCount: true, lastAiQueryAt: true },
+      });
+
+      if (user && !user.isPro) {
+        const now = new Date();
+        let count = user.aiQueryCount;
+        const lastQuery = user.lastAiQueryAt;
+
+        const isNewDay = !lastQuery || new Date(lastQuery).toDateString() !== now.toDateString();
+        if (isNewDay) {
+          count = 0;
+        }
+
+        if (count >= 5) {
+          return NextResponse.json({
+            error: "FREE_LIMIT_REACHED",
+            message: "You have reached your daily limit of 5 free AI queries. Upgrade to PRO for unlimited access!",
+          }, { status: 403 });
+        }
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            aiQueryCount: count + 1,
+            lastAiQueryAt: now,
+          },
+        });
+      }
+    }
+
     const { title, overview, genres } = await req.json();
 
     if (!title || !overview) {
