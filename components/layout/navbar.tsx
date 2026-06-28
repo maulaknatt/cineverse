@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Film, Search, Sparkles, Menu, X } from "lucide-react";
-import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { UserButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
 
@@ -18,6 +18,7 @@ const NAV_LINKS = [
 export function Navbar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isSignedIn } = useUser();
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
@@ -53,6 +54,19 @@ export function Navbar() {
                   </Link>
                 );
               })}
+              {isSignedIn && (
+                <Link
+                  href="/dashboard"
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                    pathname.startsWith("/dashboard")
+                      ? "text-white bg-white/10"
+                      : "text-zinc-400 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  Dashboard
+                </Link>
+              )}
             </div>
           </div>
 
@@ -138,6 +152,21 @@ export function Navbar() {
                   </Link>
                 );
               })}
+
+              {isSignedIn && (
+                <Link
+                  href="/dashboard"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "block px-4 py-2.5 rounded-xl text-base font-medium transition-all",
+                    pathname.startsWith("/dashboard")
+                      ? "text-white bg-white/10"
+                      : "text-zinc-400 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  Dashboard
+                </Link>
+              )}
 
               {/* Mobile AI Picks */}
               <Link

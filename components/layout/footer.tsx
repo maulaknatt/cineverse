@@ -11,8 +11,6 @@ const FOOTER_LINKS = {
   ],
   Features: [
     { label: "AI Recommendation", href: "/ai" },
-    { label: "Watchlist", href: "/watchlist" },
-    { label: "Collections", href: "/collections" },
     { label: "Community", href: "/community" },
     { label: "Dashboard", href: "/dashboard" },
   ],
