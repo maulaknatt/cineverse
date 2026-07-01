@@ -38,7 +38,7 @@ export async function getUpcomingMovies(page: number = 1) {
 export async function getMovieDetail(id: string | number) {
   return fetchTMDB<TMDBMovieDetail>(`/movie/${id}`, {
     language: "en-US",
-    append_to_response: "credits,videos,recommendations",
+    append_to_response: "credits,videos,recommendations,watch/providers",
   });
 }
 

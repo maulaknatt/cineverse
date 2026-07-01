@@ -39,6 +39,7 @@ export const revalidate = 86400; // 24 hours
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { MediaActions } from "@/components/common/media-actions";
+import { WatchProviders } from "@/components/common/watch-providers";
 
 export default async function TVDetailPage({ params }: TVDetailPageProps) {
   const { id } = await params;
@@ -137,6 +138,9 @@ export default async function TVDetailPage({ params }: TVDetailPageProps) {
               initialWatchlistStatus={initialWatchlistStatus}
               initialInFavorites={initialInFavorites}
             />
+
+            {/* Watch Providers (Where to Stream) */}
+            <WatchProviders providers={show["watch/providers"]} />
           </div>
 
           {/* Info */}

@@ -86,6 +86,7 @@ export interface TMDBMovieDetail extends TMDBMovie {
   recommendations?: {
     results: TMDBMovie[];
   };
+  "watch/providers"?: TMDBWatchProvidersResponse;
 }
 
 export interface TMDBTVShow {
@@ -180,6 +181,7 @@ export interface TMDBTVDetail extends TMDBTVShow {
   recommendations?: {
     results: TMDBTVShow[];
   };
+  "watch/providers"?: TMDBWatchProvidersResponse;
 }
 
 export interface TMDBCast {
@@ -231,4 +233,24 @@ export interface TMDBResponse<T> {
   results: T[];
   total_pages: number;
   total_results: number;
+}
+
+export interface TMDBWatchProvider {
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+  display_priority: number;
+}
+
+export interface TMDBWatchProviderResult {
+  link: string;
+  flatrate?: TMDBWatchProvider[];
+  rent?: TMDBWatchProvider[];
+  buy?: TMDBWatchProvider[];
+  free?: TMDBWatchProvider[];
+  ads?: TMDBWatchProvider[];
+}
+
+export interface TMDBWatchProvidersResponse {
+  results: Record<string, TMDBWatchProviderResult>;
 }

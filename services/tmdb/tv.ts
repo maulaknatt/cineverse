@@ -24,7 +24,7 @@ export async function getTopRatedTV(page: number = 1) {
 export async function getTVDetail(id: string | number) {
   return fetchTMDB<TMDBTVDetail>(`/tv/${id}`, {
     language: "en-US",
-    append_to_response: "credits,videos,recommendations",
+    append_to_response: "credits,videos,recommendations,watch/providers",
   });
 }
 
