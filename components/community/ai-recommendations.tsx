@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Loader2, Film } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { cn } from "@/utils/cn";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface Recommendation {
   title: string;
@@ -21,6 +21,7 @@ interface AIRecommendationsProps {
 }
 
 export function AIRecommendations({ title, overview, genres }: AIRecommendationsProps) {
+  const { t, lang } = useTranslation();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,13 +77,13 @@ export function AIRecommendations({ title, overview, genres }: AIRecommendations
           </div>
           <div>
             <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-              AI-Powered Similar Picks
+              {t.aiPicksHeader}
               <span className="text-[10px] uppercase tracking-widest bg-[#E50914] text-white px-2 py-0.5 rounded-full font-bold">
                 Gemini
               </span>
             </h2>
             <p className="text-zinc-400 text-xs mt-0.5">
-              Smart recommendations analyzed by Google Gemini based on themes, plot, and style.
+              {t.aiPicksSub}
             </p>
           </div>
         </div>
@@ -94,18 +95,18 @@ export function AIRecommendations({ title, overview, genres }: AIRecommendations
             <div className="space-y-2 text-center md:text-left">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E50914]/10 border border-[#E50914]/20 text-xs font-bold text-[#E50914] mb-1">
                 <Sparkles className="w-3.5 h-3.5" />
-                Daily limit reached (5/5)
+                {t.limitBadge}
               </div>
-              <h3 className="font-extrabold text-white text-base">Get Unlimited AI Recommendations</h3>
+              <h3 className="font-extrabold text-white text-base">{t.limitReachedTitle}</h3>
               <p className="text-zinc-300 text-xs leading-relaxed max-w-xl">
-                You&apos;ve used all 5 free AI recommendations for today. Upgrade to <span className="text-amber-500 font-bold">CineVerse PRO</span> to get unlimited AI similarity picks, direct chat with CineBot, and ad-free experience.
+                {t.limitReachedSub}
               </p>
             </div>
             <Link
               href="/upgrade"
               className="flex items-center gap-1.5 bg-[#E50914] hover:bg-[#b8070f] text-white px-5 py-3 rounded-xl font-bold text-xs shadow-lg shadow-[#E50914]/15 hover:shadow-[#E50914]/30 hover:scale-102 transition-all shrink-0 cursor-pointer w-full md:w-auto justify-center"
             >
-              <span>Unlock PRO Access</span>
+              <span>{t.unlockPro}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -123,13 +124,13 @@ export function AIRecommendations({ title, overview, genres }: AIRecommendations
         </div>
         <div>
           <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            AI-Powered Similar Picks
+            {t.aiPicksHeader}
             <span className="text-[10px] uppercase tracking-widest bg-[#E50914] text-white px-2 py-0.5 rounded-full font-bold">
               Gemini
             </span>
           </h2>
           <p className="text-zinc-400 text-xs mt-0.5">
-            Smart recommendations analyzed by Google Gemini based on themes, plot, and style.
+            {t.aiPicksSub}
           </p>
         </div>
       </div>
@@ -195,7 +196,7 @@ export function AIRecommendations({ title, overview, genres }: AIRecommendations
                 href={`/search?q=${encodeURIComponent(rec.tmdb_search_query || rec.title)}`}
                 className="flex items-center gap-1.5 text-[11px] font-bold text-[#E50914] group-hover:translate-x-1 transition-transform self-start mt-2 cursor-pointer"
               >
-                <span>Find on CineVerse</span>
+                <span>{lang === "id" ? "Temukan di CineVerse" : "Find on CineVerse"}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </motion.div>

@@ -4,8 +4,61 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, MessageSquare, Heart, Zap } from "lucide-react";
 import { AI_PROMPT_EXAMPLES, MOOD_OPTIONS } from "@/constants/ai-prompts";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function AISection() {
+  const { lang } = useTranslation();
+
+  const title =
+    lang === "en" ? (
+      <>
+        Find Your Next <span className="gradient-text">Favorite Film</span> with AI
+      </>
+    ) : (
+      <>
+        Temukan Film <span className="gradient-text">Favorit Anda</span> dengan AI
+      </>
+    );
+
+  const subtitle =
+    lang === "en"
+      ? "Describe your mood, mention a movie you love, or ask CineBot anything. Our Gemini-powered AI understands context and gives you personalized recommendations in seconds."
+      : "Jelaskan suasana hati Anda, sebutkan film yang Anda sukai, atau tanyakan apa pun ke CineBot. AI bertenaga Gemini kami memahami konteks dan memberi Anda rekomendasi pribadi dalam hitungan detik.";
+
+  const features =
+    lang === "en"
+      ? [
+          { icon: MessageSquare, label: "Natural Language Chat" },
+          { icon: Heart, label: "Mood-Based Picks" },
+          { icon: Zap, label: "Instant Results" },
+        ]
+      : [
+          { icon: MessageSquare, label: "Obrolan Bahasa Alami" },
+          { icon: Heart, label: "Pilihan Sesuai Mood" },
+          { icon: Zap, label: "Hasil Instan" },
+        ];
+
+  const buttonText = lang === "en" ? "Try AI Recommendation" : "Coba Rekomendasi AI";
+  const badgeText = lang === "en" ? "AI-Powered Discovery" : "Penemuan Berbasis AI";
+
+  const aiGreeting =
+    lang === "en"
+      ? "Hello! 👋 I'm CineBot. Tell me your mood or a favorite movie, and I will recommend the best movies for you!"
+      : "Halo! 👋 Aku CineBot. Ceritakan mood kamu atau film favoritmu, dan aku akan rekomendasikan film terbaik untukmu!";
+
+  const userMsg =
+    lang === "en"
+      ? "I like Interstellar. Recommend similar movies! 🚀"
+      : "Aku suka Interstellar. Rekomendasikan film serupa! 🚀";
+
+  const aiResponseHeader =
+    lang === "en"
+      ? "You like Interstellar? Here are my recommendations:"
+      : "Kamu suka Interstellar? Berikut rekomendasiku:";
+
+  const tryAskingText = lang === "en" ? "Try asking:" : "Coba tanyakan:";
+  const moodBadgeText = lang === "en" ? "mood-based" : "sesuai mood";
+
   return (
     <section className="w-full py-16 lg:py-24 relative overflow-hidden">
       {/* Background glow */}
@@ -24,30 +77,20 @@ export function AISection() {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E50914]/10 border border-[#E50914]/20 mb-6">
               <Sparkles className="w-4 h-4 text-[#E50914]" />
-              <span className="text-sm font-medium text-[#E50914]">
-                AI-Powered Discovery
-              </span>
+              <span className="text-sm font-medium text-[#E50914]">{badgeText}</span>
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
-              Find Your Next{" "}
-              <span className="gradient-text">Favorite Film</span>{" "}
-              with AI
+              {title}
             </h2>
 
             <p className="text-zinc-400 text-base sm:text-lg leading-relaxed mb-8">
-              Describe your mood, mention a movie you love, or ask CineBot anything.
-              Our Gemini-powered AI understands context and gives you personalized
-              recommendations in seconds.
+              {subtitle}
             </p>
 
             {/* Feature Pills */}
             <div className="flex flex-wrap gap-3 mb-8">
-              {[
-                { icon: MessageSquare, label: "Natural Language Chat" },
-                { icon: Heart, label: "Mood-Based Picks" },
-                { icon: Zap, label: "Instant Results" },
-              ].map(({ icon: Icon, label }) => (
+              {features.map(({ icon: Icon, label }) => (
                 <div
                   key={label}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl glass border border-white/10"
@@ -63,7 +106,7 @@ export function AISection() {
               className="inline-flex items-center gap-2 px-6 py-3 bg-[#E50914] hover:bg-[#b20710] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-red-900/30 active:scale-95 group"
             >
               <Sparkles className="w-5 h-5" />
-              Try AI Recommendation
+              {buttonText}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
@@ -100,18 +143,14 @@ export function AISection() {
                     <Sparkles className="w-3.5 h-3.5 text-[#E50914]" />
                   </div>
                   <div className="glass rounded-2xl rounded-tl-sm px-3 py-2 max-w-[80%]">
-                    <p className="text-sm text-zinc-200">
-                      Halo! 👋 Aku CineBot. Ceritakan mood kamu atau film favoritmu, dan aku akan rekomendasikan film terbaik untukmu!
-                    </p>
+                    <p className="text-sm text-zinc-200">{aiGreeting}</p>
                   </div>
                 </div>
 
                 {/* User message */}
                 <div className="flex gap-2 justify-end">
                   <div className="bg-[#E50914] rounded-2xl rounded-tr-sm px-3 py-2 max-w-[80%]">
-                    <p className="text-sm text-white">
-                      Aku suka Interstellar. Rekomendasikan film serupa! 🚀
-                    </p>
+                    <p className="text-sm text-white">{userMsg}</p>
                   </div>
                 </div>
 
@@ -121,18 +160,11 @@ export function AISection() {
                     <Sparkles className="w-3.5 h-3.5 text-[#E50914]" />
                   </div>
                   <div className="glass rounded-2xl rounded-tl-sm px-3 py-2 max-w-[80%]">
-                    <p className="text-sm text-zinc-200 mb-2">
-                      Kamu suka Interstellar? Berikut rekomendasiku:
-                    </p>
+                    <p className="text-sm text-zinc-200 mb-2">{aiResponseHeader}</p>
                     {["Arrival (2016)", "Inception (2010)", "2001: A Space Odyssey"].map((film) => (
-                      <div
-                        key={film}
-                        className="flex items-center gap-2 py-1"
-                      >
+                      <div key={film} className="flex items-center gap-2 py-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#E50914]" />
-                        <span className="text-sm text-white font-medium">
-                          {film}
-                        </span>
+                        <span className="text-sm text-white font-medium">{film}</span>
                       </div>
                     ))}
                   </div>
@@ -164,7 +196,7 @@ export function AISection() {
 
               {/* Prompt Examples */}
               <div className="border-t border-white/10 pt-3">
-                <p className="text-xs text-zinc-500 mb-2">Try asking:</p>
+                <p className="text-xs text-zinc-500 mb-2">{tryAskingText}</p>
                 <div className="flex flex-wrap gap-2">
                   {AI_PROMPT_EXAMPLES.slice(0, 3).map((ex) => (
                     <button
@@ -191,7 +223,7 @@ export function AISection() {
                       {mood.emoji}
                     </span>
                   ))}
-                  <span className="text-xs text-zinc-400">mood-based</span>
+                  <span className="text-xs text-zinc-400">{moodBadgeText}</span>
                 </div>
               </motion.div>
             </div>

@@ -1,27 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Film, Github, Twitter, Instagram, Heart } from "lucide-react";
-
-const FOOTER_LINKS = {
-  Discover: [
-    { label: "Trending", href: "/trending" },
-    { label: "Popular Movies", href: "/movies?sort=popularity.desc" },
-    { label: "Top Rated", href: "/movies?sort=vote_average.desc" },
-    { label: "Series", href: "/tv" },
-    { label: "Genres", href: "/genres" },
-  ],
-  Features: [
-    { label: "AI Recommendation", href: "/ai" },
-    { label: "Community", href: "/community" },
-    { label: "Dashboard", href: "/dashboard" },
-  ],
-  Company: [
-    { label: "About", href: "/about" },
-    { label: "Blog", href: "/blog" },
-    { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Contact", href: "/contact" },
-  ],
-};
+import { useTranslation } from "@/hooks/use-translation";
 
 const SOCIAL_LINKS = [
   { icon: Twitter, href: "https://twitter.com/cineverse", label: "Twitter" },
@@ -30,6 +11,43 @@ const SOCIAL_LINKS = [
 ];
 
 export function Footer() {
+  const { t, lang } = useTranslation();
+
+  const footerLinks = {
+    [t.discover]: [
+      { label: t.trending, href: "/trending" },
+      { label: t.popularMovies, href: "/movies?sort=popularity.desc" },
+      { label: t.topRated, href: "/movies?sort=vote_average.desc" },
+      { label: t.series, href: "/tv" },
+      { label: t.genres, href: "/genres" },
+    ],
+    [t.features]: [
+      { label: t.aiRecommendation, href: "/ai" },
+      { label: t.community, href: "/community" },
+      { label: t.dashboard, href: "/dashboard" },
+    ],
+    [t.company]: [
+      { label: t.about, href: "/about" },
+      { label: t.blog, href: "/blog" },
+      { label: t.privacyPolicy, href: "/privacy" },
+      { label: t.termsOfService, href: "/terms" },
+      { label: t.contact, href: "/contact" },
+    ],
+  };
+
+  const appDescription =
+    lang === "en"
+      ? "Discover Movies Smarter. AI-powered movie discovery platform helping you find your next favorite film through mood, genre, and intelligent recommendations."
+      : "Temukan film dengan cara yang lebih cerdas. Platform penemuan film berbasis AI untuk membantu Anda menemukan film favorit berikutnya melalui suasana hati, genre, dan rekomendasi pintar.";
+
+  const copyrightText =
+    lang === "en"
+      ? `© ${new Date().getFullYear()} CineVerse. All rights reserved.`
+      : `© ${new Date().getFullYear()} CineVerse. Hak cipta dilindungi undang-undang.`;
+
+  const footerLoveText = lang === "en" ? "Made with" : "Dibuat dengan";
+  const footerForLovers = lang === "en" ? "for movie lovers" : "untuk pecinta film";
+
   return (
     <footer className="border-t border-white/5 bg-[#09090B]">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
@@ -45,9 +63,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-zinc-400 leading-relaxed max-w-xs mb-6">
-              Discover Movies Smarter. AI-powered movie discovery platform
-              helping you find your next favorite film through mood, genre, and
-              intelligent recommendations.
+              {appDescription}
             </p>
             <div className="flex items-center gap-3">
               {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
@@ -66,7 +82,7 @@ export function Footer() {
           </div>
 
           {/* Links */}
-          {Object.entries(FOOTER_LINKS).map(([category, links]) => (
+          {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
               <h3 className="text-sm font-semibold text-white mb-4">
                 {category}
@@ -90,10 +106,10 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-zinc-500">
-            © 2025 CineVerse. All rights reserved.
+            {copyrightText}
           </p>
           <p className="text-xs text-zinc-500 flex items-center gap-1">
-            Made with <Heart className="w-3 h-3 text-[#E50914] fill-current" /> for movie lovers
+            {footerLoveText} <Heart className="w-3 h-3 text-[#E50914] fill-current" /> {footerForLovers}
           </p>
           <p className="text-xs text-zinc-600">
             Powered by{" "}

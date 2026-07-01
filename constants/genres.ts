@@ -88,3 +88,50 @@ export const GENRE_COLORS: Record<number, string> = {
   10759: "from-red-600 to-orange-500",
   10765: "from-blue-600 to-violet-600",
 };
+
+// Genre translations mapping
+export const GENRE_TRANSLATIONS: Record<number, { en: string; id: string }> = {
+  28: { en: "Action", id: "Aksi" },
+  12: { en: "Adventure", id: "Petualangan" },
+  16: { en: "Animation", id: "Animasi" },
+  35: { en: "Comedy", id: "Komedi" },
+  80: { en: "Crime", id: "Kriminal" },
+  99: { en: "Documentary", id: "Dokumenter" },
+  18: { en: "Drama", id: "Drama" },
+  10751: { en: "Family", id: "Keluarga" },
+  14: { en: "Fantasy", id: "Fantasi" },
+  36: { en: "History", id: "Sejarah" },
+  27: { en: "Horror", id: "Horor" },
+  10402: { en: "Music", id: "Musik" },
+  9648: { en: "Mystery", id: "Misteri" },
+  10749: { en: "Romance", id: "Romantis" },
+  878: { en: "Science Fiction", id: "Fiksi Ilmiah" },
+  10770: { en: "TV Movie", id: "Film TV" },
+  53: { en: "Thriller", id: "Thriller" },
+  10752: { en: "War", id: "Perang" },
+  37: { en: "Western", id: "Barat" },
+  // TV Genres
+  10759: { en: "Action & Adventure", id: "Aksi & Petualangan" },
+  10762: { en: "Kids", id: "Anak-anak" },
+  10763: { en: "News", id: "Berita" },
+  10764: { en: "Reality", id: "Realitas" },
+  10765: { en: "Sci-Fi & Fantasy", id: "Fiksi Ilmiah & Fantasi" },
+  10766: { en: "Soap", id: "Sinetron" },
+  10767: { en: "Talk", id: "Bincang-bincang" },
+  10768: { en: "War & Politics", id: "Perang & Politik" },
+};
+
+export function getMovieGenres(lang: string): TMDBGenre[] {
+  return MOVIE_GENRES.map((g) => ({
+    id: g.id,
+    name: GENRE_TRANSLATIONS[g.id]?.[lang === "id" ? "id" : "en"] || g.name,
+  }));
+}
+
+export function getTVGenres(lang: string): TMDBGenre[] {
+  return TV_GENRES.map((g) => ({
+    id: g.id,
+    name: GENRE_TRANSLATIONS[g.id]?.[lang === "id" ? "id" : "en"] || g.name,
+  }));
+}
+

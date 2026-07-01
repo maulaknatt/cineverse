@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const lang = req.cookies.get("lang")?.value || "en";
     const model = getGeminiFlash();
 
     const prompt = `
@@ -58,7 +59,11 @@ For each recommendation, provide:
 1. Title
 2. Year (integer)
 3. Genre
-4. Reason: A brief explanation (1-2 sentences) of why it is similar and why the user would like it.
+4. Reason: A brief explanation (1-2 sentences) of why it is similar and why the user would like it. ${
+      lang === "id"
+        ? "Write the reason in Indonesian (Bahasa Indonesia) using a friendly and cinematic tone."
+        : "Write the reason in English."
+    }
 5. tmdb_search_query: The exact search query to find this movie (e.g. "Inception 2010").
 
 Return your response as a JSON array with this structure:

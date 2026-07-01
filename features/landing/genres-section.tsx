@@ -2,21 +2,25 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { MOVIE_GENRES, GENRE_EMOJI, GENRE_COLORS } from "@/constants/genres";
+import { getMovieGenres, GENRE_EMOJI, GENRE_COLORS } from "@/constants/genres";
 import { SectionHeader } from "@/components/common/section-header";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function GenresSection() {
+  const { lang } = useTranslation();
+  const genres = getMovieGenres(lang);
+
   return (
     <section className="w-full py-16">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="Browse by Genre"
-          subtitle="Find films that match your taste"
+          title={lang === "en" ? "Browse by Genre" : "Jelajahi berdasarkan Genre"}
+          subtitle={lang === "en" ? "Find films that match your taste" : "Temukan film yang sesuai dengan selera Anda"}
           href="/genres"
         />
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-          {MOVIE_GENRES.slice(0, 18).map((genre, index) => (
+          {genres.slice(0, 18).map((genre, index) => (
             <motion.div
               key={genre.id}
               initial={{ opacity: 0, scale: 0.9 }}

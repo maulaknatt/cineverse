@@ -41,14 +41,20 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { MediaActions } from "@/components/common/media-actions";
 import { WatchProviders } from "@/components/common/watch-providers";
+import { cookies } from "next/headers";
+import { translations } from "@/constants/translations";
 
 export default async function MovieDetailPage({ params }: MovieDetailPageProps) {
   const { id } = await params;
   const numericId = String(id).split("-")[0];
+  const cookieStore = await cookies();
+  const lang = cookieStore.get("lang")?.value || "en";
+  const t = translations[lang === "id" ? "id" : "en"];
+  const tmdbLang = lang === "id" ? "id-ID" : "en-US";
   let movie;
 
   try {
-    movie = await getMovieDetail(numericId);
+    movie = await getMovieDetail(numericId, tmdbLang);
   } catch {
     notFound();
   }
@@ -110,7 +116,7 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
             className="flex items-center gap-2 text-sm text-zinc-300 hover:text-white glass px-3 py-2 rounded-lg transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            {t.back}
           </Link>
         </div>
       </div>
@@ -193,7 +199,7 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
 
             {/* Overview */}
             <div className="mb-10">
-              <h2 className="text-lg font-semibold text-white mb-3">Overview</h2>
+              <h2 className="text-lg font-semibold text-white mb-3">{t.overview}</h2>
               <p className="text-zinc-300 leading-relaxed text-lg max-w-4xl">
                 {movie.overview}
               </p>
@@ -203,19 +209,19 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mb-12 py-6 border-y border-white/10">
               {director && (
                 <div>
-                  <p className="text-sm text-zinc-500 mb-1">Director</p>
+                  <p className="text-sm text-zinc-500 mb-1">{t.director}</p>
                   <p className="font-medium text-white">{director.name}</p>
                 </div>
               )}
               {movie.budget > 0 && (
                 <div>
-                  <p className="text-sm text-zinc-500 mb-1">Budget</p>
+                  <p className="text-sm text-zinc-500 mb-1">{t.budget}</p>
                   <p className="font-medium text-white">{formatCurrency(movie.budget)}</p>
                 </div>
               )}
               {movie.revenue > 0 && (
                 <div>
-                  <p className="text-sm text-zinc-500 mb-1">Revenue</p>
+                  <p className="text-sm text-zinc-500 mb-1">{t.revenue}</p>
                   <p className="font-medium text-white">{formatCurrency(movie.revenue)}</p>
                 </div>
               )}
@@ -224,7 +230,7 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
             {/* Cast */}
             {cast.length > 0 && (
               <div className="mb-12">
-                <SectionHeader title="Top Cast" />
+                <SectionHeader title={lang === "id" ? "Pemeran Utama" : "Top Cast"} />
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {cast.map((actor) => (
                     <div key={actor.id} className="group">
@@ -258,7 +264,7 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
             {/* Trailer */}
             {trailer && (
               <div className="mb-12">
-                <SectionHeader title="Official Trailer" />
+                <SectionHeader title={t.officialTrailer} />
                 <div className="relative aspect-video rounded-2xl overflow-hidden bg-zinc-900 border border-white/10 shadow-2xl">
                   <iframe
                     src={`https://www.youtube.com/embed/${trailer.key}?rel=0&modestbranding=1`}
@@ -286,7 +292,7 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
         {recommendations.length > 0 && (
           <div className="mt-16">
             <MovieCarousel
-              title="You Might Also Like"
+              title={t.youMightLike}
               items={recommendations}
               mediaType="movie"
             />

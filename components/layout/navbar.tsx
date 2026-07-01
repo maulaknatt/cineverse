@@ -7,17 +7,21 @@ import { Film, Search, Sparkles, Menu, X } from "lucide-react";
 import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
+import { useTranslation } from "@/hooks/use-translation";
 
-const NAV_LINKS = [
-  { href: "/movies", label: "Movies" },
-  { href: "/tv", label: "Series" },
-  { href: "/trending", label: "Trending" },
-  { href: "/community", label: "Community" },
-];
+
 
 export function Navbar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t, lang, toggleLanguage } = useTranslation();
+
+  const links = [
+    { href: "/movies", label: t.movies },
+    { href: "/tv", label: t.series },
+    { href: "/trending", label: t.trending },
+    { href: "/community", label: t.community },
+  ];
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
@@ -36,7 +40,7 @@ export function Navbar() {
             </Link>
 
             <div className="hidden md:flex items-center gap-1">
-              {NAV_LINKS.map((link) => {
+              {links.map((link) => {
                 const isActive = pathname.startsWith(link.href);
                 return (
                   <Link
@@ -63,7 +67,7 @@ export function Navbar() {
                       : "text-zinc-400 hover:text-white hover:bg-white/5"
                   )}
                 >
-                  Dashboard
+                  {t.dashboard}
                 </Link>
               </SignedIn>
             </div>
@@ -71,10 +75,20 @@ export function Navbar() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
+            {/* Language Toggle */}
+            <button
+              onClick={toggleLanguage}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white/5 border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 h-8"
+              title={lang === "en" ? "Ubah ke Bahasa Indonesia" : "Switch to English"}
+            >
+              <span className="text-sm">{lang === "en" ? "🇬🇧" : "🇮🇩"}</span>
+              <span className="uppercase text-[9px] tracking-wider">{lang === "en" ? "EN" : "ID"}</span>
+            </button>
+
             <Link
               href="/search"
               className="p-2 text-zinc-400 hover:text-white transition-colors"
-              aria-label="Search"
+              aria-label={t.search}
             >
               <Search className="w-5 h-5" />
             </Link>
@@ -84,7 +98,7 @@ export function Navbar() {
               className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-sm font-medium hover:bg-indigo-500/20 transition-colors border border-indigo-500/20"
             >
               <Sparkles className="w-4 h-4" />
-              AI Picks
+              {t.aiPicks}
             </Link>
 
             <div className="h-6 w-px bg-white/10 hidden sm:block mx-1" />
@@ -133,7 +147,7 @@ export function Navbar() {
             className="md:hidden border-b border-white/5 bg-black/95 backdrop-blur-2xl overflow-hidden"
           >
             <div className="px-4 py-4 space-y-3">
-              {NAV_LINKS.map((link) => {
+              {links.map((link) => {
                 const isActive = pathname.startsWith(link.href);
                 return (
                   <Link
@@ -163,7 +177,7 @@ export function Navbar() {
                       : "text-zinc-400 hover:text-white hover:bg-white/5"
                   )}
                 >
-                  Dashboard
+                  {t.dashboard}
                 </Link>
               </SignedIn>
 
@@ -179,7 +193,7 @@ export function Navbar() {
                 )}
               >
                 <Sparkles className="w-5 h-5 text-indigo-400" />
-                AI Picks
+                {t.aiPicks}
               </Link>
             </div>
           </motion.div>
