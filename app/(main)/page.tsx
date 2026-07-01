@@ -9,6 +9,7 @@ import {
   getTopRatedMovies,
   getNowPlayingMovies,
   getUpcomingMovies,
+  getMovieDetail,
 } from "@/services/tmdb/movies";
 import { getTrendingTV, getPopularTV } from "@/services/tmdb/tv";
 import { cookies } from "next/headers";
@@ -50,6 +51,22 @@ export default async function HomePage() {
   ]);
 
   const heroMovies = trendingDayRes.results.slice(0, 5);
+
+  // Fallback empty overviews in heroMovies if Indonesian is selected
+  if (lang === "id") {
+    await Promise.all(
+      heroMovies.map(async (movie) => {
+        if (!movie.overview) {
+          try {
+            const enMovie = await getMovieDetail(movie.id, "en-US");
+            movie.overview = enMovie.overview;
+          } catch (e) {
+            console.error("Failed to fetch English fallback overview for HeroBanner movie:", e);
+          }
+        }
+      })
+    );
+  }
 
   const stats =
     lang === "id"

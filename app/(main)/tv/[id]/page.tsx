@@ -54,6 +54,16 @@ export default async function TVDetailPage({ params }: TVDetailPageProps) {
 
   try {
     show = await getTVDetail(numericId, tmdbLang);
+    // Fallback if overview is empty in Indonesian translation
+    if (lang === "id" && !show.overview) {
+      try {
+        const enShow = await getTVDetail(numericId, "en-US");
+        show.overview = enShow.overview;
+        if (!show.tagline) show.tagline = enShow.tagline;
+      } catch (err) {
+        console.error("Failed to fetch English fallback overview for TV show:", err);
+      }
+    }
   } catch {
     notFound();
   }

@@ -55,6 +55,16 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
 
   try {
     movie = await getMovieDetail(numericId, tmdbLang);
+    // Fallback if overview is empty in Indonesian translation
+    if (lang === "id" && !movie.overview) {
+      try {
+        const enMovie = await getMovieDetail(numericId, "en-US");
+        movie.overview = enMovie.overview;
+        if (!movie.tagline) movie.tagline = enMovie.tagline;
+      } catch (err) {
+        console.error("Failed to fetch English fallback overview for movie:", err);
+      }
+    }
   } catch {
     notFound();
   }
