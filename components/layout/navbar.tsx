@@ -75,16 +75,6 @@ export function Navbar() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLanguage}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white/5 border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 h-8"
-              title={lang === "en" ? "Ubah ke Bahasa Indonesia" : "Switch to English"}
-            >
-              <span className="text-sm">{lang === "en" ? "🇬🇧" : "🇮🇩"}</span>
-              <span className="uppercase text-[9px] tracking-wider">{lang === "en" ? "EN" : "ID"}</span>
-            </button>
-
             <Link
               href="/search"
               className="p-2 text-zinc-400 hover:text-white transition-colors"
@@ -100,6 +90,15 @@ export function Navbar() {
               <Sparkles className="w-4 h-4" />
               {t.aiPicks}
             </Link>
+
+            {/* Language Toggle */}
+            <button
+              onClick={toggleLanguage}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white transition-all cursor-pointer flex items-center justify-center h-8 min-w-[36px]"
+              title={lang === "en" ? "Ubah ke Bahasa Indonesia" : "Switch to English"}
+            >
+              <span className="uppercase text-[10px] tracking-wider font-extrabold">{lang === "en" ? "EN" : "ID"}</span>
+            </button>
 
             <div className="h-6 w-px bg-white/10 hidden sm:block mx-1" />
 
